@@ -37,7 +37,8 @@ class Hand(object):
         )
         self.nn.restore()
 
-    def write(self, filename, lines, biases=None, styles=None, stroke_colors=None, stroke_widths=None):
+    def write(self, filename, lines, biases=None, styles=None, stroke_colors=None, stroke_widths=None, dither=0, line_height=30, margins=50, line_break=0.5, noiseVal=1):
+        print('WRITING')
         valid_char_set = set(drawing.alphabet)
         for line_num, line in enumerate(lines):
             if len(line) > 75:
@@ -58,7 +59,8 @@ class Hand(object):
                     )
 
         strokes = self._sample(lines, biases=biases, styles=styles)
-        _draw(strokes, lines, filename, stroke_colors=stroke_colors, stroke_widths=stroke_widths)
+        _draw(strokes, lines, filename, stroke_colors, stroke_widths,
+              dither, line_height, margins, line_break, noiseVal)
 
     def _sample(self, lines, biases=None, styles=None):
         num_samples = len(lines)
@@ -73,7 +75,8 @@ class Hand(object):
         if styles is not None:
             for i, (cs, style) in enumerate(zip(lines, styles)):
                 x_p = np.load(f"{style_path}/style-{style}-strokes.npy")
-                c_p = np.load(f"{style_path}/style-{style}-chars.npy").tostring().decode('utf-8')
+                c_p = np.load(
+                    f"{style_path}/style-{style}-chars.npy").tostring().decode('utf-8')
 
                 c_p = str(c_p) + " " + cs
                 c_p = drawing.encode_ascii(c_p)
@@ -103,5 +106,6 @@ class Hand(object):
                 self.nn.bias: biases
             }
         )
-        samples = [sample[~np.all(sample == 0.0, axis=1)] for sample in samples]
+        samples = [sample[~np.all(sample == 0.0, axis=1)]
+                   for sample in samples]
         return samples
