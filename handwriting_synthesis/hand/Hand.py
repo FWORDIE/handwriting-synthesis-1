@@ -59,8 +59,9 @@ class Hand(object):
                     )
 
         strokes = self._sample(lines, biases=biases, styles=styles)
-        _draw(strokes, lines, filename, stroke_colors, stroke_widths,
+        endFileName = _draw(strokes, lines, filename, stroke_colors, stroke_widths,
               dither, line_height, margins, line_break, noiseVal)
+        return endFileName
 
     def _sample(self, lines, biases=None, styles=None):
         num_samples = len(lines)

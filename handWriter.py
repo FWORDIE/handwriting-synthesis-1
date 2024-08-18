@@ -5,6 +5,16 @@ from timeit import default_timer as timer
 import time
 import random
 
+from svgwrite import cm
+import svgutils
+import random
+from handwriting_synthesis import drawing
+from perlin_noise import PerlinNoise
+import svgpathtools as svg
+import os
+
+from Inker import printLetter
+
 
 GSBs = []
 
@@ -45,7 +55,7 @@ GSBs.append(GSB(12, 2))
 GSBs.append(GSB(12, 12))
 
 
-def formater(letter='testing letter', subject='test', chars=60, styleVar=0, baisVar=1, line_height=30, dither=0, noiseVal=0, line_break=1.2, margins=50):
+def formater(letter='testing letter', subject='test', chars=60, styleVar=0, baisVar=1, line_height=30, dither=0, noiseVal=0, line_break=1.2, margins=50, prefix='letters'):
     print(f'STARTING: {subject}')
     print(f'---PARAMS---')
     print(f'Chars: {chars}')
@@ -138,10 +148,10 @@ def formater(letter='testing letter', subject='test', chars=60, styleVar=0, bais
     stroke_colors = ['black' for i in lines]
     stroke_widths = [1 for i in lines]
 
-    fileName = f'{subject}   S{styleVar}_B{baisVar}_L{line_height}_D{dither}_N{noiseVal}_G{line_break}_C{chars}_M{margins}'
+    fileName = f'{prefix}/{subject}   S{styleVar}_B{baisVar}_L{line_height}_D{dither}_N{noiseVal}_G{line_break}_C{chars}_M{margins}'
     fileNameCleaned = fileName.replace(".", "-")
-    hand.write(
-        filename=f'letters/{fileNameCleaned}.svg',
+    letterPath = hand.write(
+        filename=f'{fileNameCleaned}.svg',
         lines=lines,
         biases=biases,
         styles=styles,
@@ -153,8 +163,8 @@ def formater(letter='testing letter', subject='test', chars=60, styleVar=0, bais
         noiseVal=noiseVal,
         line_break=line_break
     )
-
-    print(f'FINISHED: {subject}')
+    return letterPath
+    # print(f'FINISHED: {subject}')
 
 
 # letterText = {
@@ -172,8 +182,8 @@ def formater(letter='testing letter', subject='test', chars=60, styleVar=0, bais
 #         """
 # }
 
-thisOne = {
-    'name': 'My-Anchor-For-12-Years',
+letterObject = {
+    'subject': 'My-Anchor-For-12-Years',
     'lang': 'eng',
     'body': """
         Dear Amirr,
@@ -182,48 +192,42 @@ I hope this letter finds you surrounded by the same love and warmth that you hav
 
 These past years have been a whirlwind of joy, happiness, and growth. We have experienced the highest of highs and navigated through the toughest challenges hand in hand. From carefree youngsters to responsible and nurturing parents-to-be, every step we took together has further deepened my love and admiration for you.
 
+These past years have been a whirlwind of joy, happiness, and growth. We have experienced the highest of highs and navigated through the toughest challenges hand in hand. From carefree youngsters to responsible and nurturing parents-to-be, every step we took together has further deepened my love and admiration for you.
+
+
+These past years have been a whirlwind of joy, happiness, and growth. We have experienced the highest of highs and navigated through the toughest challenges hand in hand. From carefree youngsters to responsible and nurturing parents-to-be, every step we took together has further deepened my love and admiration for you.
+These past years have been a whirlwind of joy, happiness, and growth. We have experienced the highest of highs and navigated through the toughest challenges hand in hand. From carefree youngsters to responsible and nurturing parents-to-be, every step we took together has further deepened my love and admiration for you.
+
+
 With all my love,
 Nura
         """
 }
 
-if __name__ == '__main__':
 
-    # print(sys.argv)
-    # if len(sys.argv) > 1 and sys.argv[1] == 'formater':
-    # Parse additional arguments if necessary
-    # print(letterText['body'], subject='test', chars=60, styleVar=0, baisVar=1, line_height=5, dither=0, noiseVal=20)
-    total = len(GSBs)
-    x = 0
-    totalTime = 0
-    average = 0
-    GSB = GSBs[random.randint(0, len(GSBs))]
-    # start = time.time()
-    formater(
-        letter=thisOne["body"],
-        subject=thisOne["name"],
+def handWriter(letterObject, ink=False):
+
+    GSB = GSBs[random.randint(0, len(GSBs)-1)]
+
+    letterPath = formater(
+        letter=letterObject["body"],
+        subject=letterObject["subject"],
         chars=random.randint(45, 70),
         styleVar=GSB.style,
         baisVar=GSB.bais,
         line_height=random.randint(25, 70),
         dither=(random.randint(1, 50)/10),
         noiseVal=(random.randint(1, 20)/10),
-        line_break=(random.randint(0, 15)/10),
-        margins=random.randint(40, 70)
+        line_break=(random.randint(5, 18)/10),
+        margins=random.randint(30, 70),
+        prefix='letters/'
     )
-    
-    
-    # x += 1
+    if ink == True:
+        printLetter(letterPath)
 
-    # end = time.time()
-    # thistime = end - start
-    # totalTime += thistime
-    # elapsedStr = time.strftime('%H:%M:%S', time.gmtime(thistime))
-    # totalStr = time.strftime('%H:%M:%S', time.gmtime(totalTime))
-    # averageStr = time.strftime('%H:%M:%S', time.gmtime(totalTime/x))
-    # timeLeft = (total - x ) * (totalTime/x)
-    # timeLeftStr = time.strftime('%H:%M:%S', time.gmtime(timeLeft))
-    # print(f'Progress:{x}/{total}')
-    # print(f'Time Taken:{elapsedStr}')
-    # print(f'Time Total:{totalStr}')
-    # print(f'Time Left:{timeLeftStr}')
+
+if __name__ == '__main__':
+    handWriter(letterObject)
+
+    # Desired size
+ 

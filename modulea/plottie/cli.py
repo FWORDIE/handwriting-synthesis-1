@@ -459,7 +459,12 @@ def parse_svg_argument(parser, args):
     logging.info("Loaded SVG")
 
 
-def parse_device_arguments(parser, args):
+def parse_device_arguments(parser, args, d):
+    
+    if d:
+        args.device = d
+        return
+    
     devices = enumerate_devices(
         args.use_dummy_device is not False,
         args.use_dummy_device,
@@ -594,7 +599,7 @@ def parse_regmarks(parser, args):
             args.regmarks = discovered_regmarks
 
 
-def parse_arguments(arg_strings=None):
+def parse_arguments(arg_strings=None, d=any):
     """
     Parse a set of commandline arguments returning the resulting options in an
     argparse namespace with the following entries:
@@ -631,7 +636,7 @@ def parse_arguments(arg_strings=None):
     parse_visibility_arguments(parser, args)
     
     # Select device
-    parse_device_arguments(parser, args)
+    parse_device_arguments(parser, args, d)
     
     # Parse speed and force settings
     parse_speed_and_force(parser, args)
