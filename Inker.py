@@ -1,5 +1,5 @@
 import time
-from py_silhouette import SilhouetteDevice, enumerate_devices, DeviceState
+from modulea.py_silhouette import SilhouetteDevice, enumerate_devices, DeviceState
 from modulea.plottie.cli import main, args_to_outlines, parse_arguments, zero_on_regmarks, svg_to_outlines
 
 class TimeoutError(Exception):

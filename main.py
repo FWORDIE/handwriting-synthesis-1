@@ -3,51 +3,51 @@ from pocketbase.client import FileUpload
 from time import sleep
 import logging
 from datetime import datetime
+from handWriter import handWriter
 # Setup logging
-logging.basicConfig(level=logging.INFO)
+
 
 client = PocketBase('https://pockets.db.fixthecode.xyz')
 
 # Authenticate as admin
 try:
-    admin_data = client.admins.auth_with_password("fred+live@mildlyupset.com", "dZT$wMX9rQ73~,=")
+    admin_data = client.admins.auth_with_password(
+        "fred+live@mildlyupset.com", "dZT$wMX9rQ73~,=")
 except Exception as ex:
-    logging.error(f"Authentication failed: {ex}")
+    print(f"Authentication failed: {ex}")
     exit(1)
+
 
 def checkDatabase():
     today = datetime.today().strftime('%Y-%m-%d')
     result = client.collection("dear_ai_live").get_list(
-    1, 20, { "filter": f'status = "toPrint" && created > "{today} 00:00:00"',"sort": 'created'})
+    1, 20, {"filter": f'status = "toPrint" && created > "{today} 00:00:00"', "sort": 'created'})
     if len(result.items) > 0:
         print(result.items[0].id)
         item = result.items[0]
-        logging.info(f" Found a new letter")
+        print(f" Found a new letter")
     else:
         item = False
-        logging.info(f" No items to print")
+        print(f" No items to print")
     return item
 
-    
+
 def updateItem(id, status):
-    
-    result = client.collection("dear_ai_live").update(id
-    ,{
+
+    result = client.collection("dear_ai_live").update(id, {
         "status": f"{status}",
     })
-    
-    
 
 
-
-            
-            
 def initWriting(item):
     id = item.id
-    logging.info(f"{item.subject}")
-    sleep(10)
+    print(f"{item.subject}")
+    updateItem(id, 'printing')
+    sleep(5)
+    handWriter(item.letter, item.subject)
     updateItem(id, 'printed')
-    
+    sleep(5)
+
 
 if __name__ == '__main__':
 
@@ -56,12 +56,13 @@ if __name__ == '__main__':
 
     try:
         while True:
-            sleep(5)
             item = checkDatabase()
             if item:
+                print(item)
                 initWriting(item)
+            sleep(10)
 
     except KeyboardInterrupt:
-        logging.info("Graceful shutdown upon user request")
+        print("Graceful shutdown upon user request")
     except Exception as ex:
-        logging.error(f"An error occurred: {ex}")
+        print(f"An error occurred: {ex}")

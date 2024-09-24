@@ -388,6 +388,9 @@ class BaseModel(object):
             format='[[%(asctime)s]] %(message)s',
             datefmt='%m/%d/%Y %I:%M:%S %p'
         )
+        if (logging.getLogger().hasHandlers()):
+            logging.getLogger().handlers.clear()
+
         logging.getLogger().addHandler(logging.StreamHandler())
 
     def update_parameters(self, loss):
